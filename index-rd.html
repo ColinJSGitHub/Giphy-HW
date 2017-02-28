@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Giphy API</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+
+<body>
+  <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+  <script type="text/javascript">
+    // Example queryURL for Giphy API
+    var queryURL = "http://api.giphy.com/v1/gifs/search?q=puppy&api_key=dc6zaTOxFJmzC&limit=10";
+
+    //added "&limit=4" to limit to 10 results.
+
+    var queryObject = {
+      q: "puppy",
+      //q is the search terms used
+      limit: 10,
+      //limits the results to the first 10
+      rating: "g",
+      //uses the rating property of the gifs found
+      fmt: "html"
+      //returns the html format of these gifs
+    }
+
+    var encodedObject = $.param(queryObject);
+    //look up param for usage
+    console.log("You Rock!");
+    console.log(queryObject);
+    console.log(encodedObject);
+
+    //uses jQuery to define the new variable encodedObject as the parameters of the queryObject variable.
+
+    $.ajax({
+      url: queryURL,
+      method: 'GET'
+
+    }).done(function(response) {
+      //you've received the get object (the array with all 25 of your gifs). Create a loop that will go through the array and create
+      //images, using the source property from the gifs in your array, appending them to the html
+
+      for (var i = 0; i < response.data.length; i++) {
+        //runs through function until the response (which has 25 object gifs) length = the index (goes through whole array)
+
+        console.log(response.data[i].images.downsized.url)
+        //logs the "embed_url" property of the gif object at the current index position)
+
+
+        var image = $("<img>");
+        image.attr("src", response.data[i].images.downsized.url)
+        //sets the source of the new image object, attr is how you assign objects. First argument is attribute name, second argument is value you want to
+        //pass to the attribute
+        $("body").append(image)
+          //body is the location you want to append to; appends the image as defined by this function.
+      }
+      console.log(response);
+    });
+  </script>
+  <script type="text/javascript">
+    $(".gif").on("click", function() {
+      // STEP ONE: study the html above.
+      // Look at all the data attributes.
+      // Run the file in the browser. Look at the images.
+
+      // After we complete steps 1 and 2 we'll be able to pause gifs from giphy.
+
+      // STEP TWO: make a variable named state and then store the image's data-state into it.
+      // Use the .attr() method for this.
+
+      // ============== FILL IN CODE HERE FOR STEP TWO =========================
+
+      var state = $(this).attr("data-state");
+      console.log(state);
+
+      // =============================================
+
+      // STEP THREE: Check if the variable state is equal to 'still',
+      // then update the src attribute of this image to it's data-animate value,
+      // and update the data-state attribute to 'animate'.
+
+      // If state does not equal 'still', then update the src attribute of this
+      // image to it's data-still value and update the data-state attribute to 'still'
+      // ============== FILL IN CODE HERE FOR STEP THREE =========================
+
+      // CODE GOES HERE
+      if (state === "still") {
+        $(this).attr("src", $(this).attr("data-animate"));
+        $(this).attr("data-state", "animate");
+      }
+      // if function checks to see if the state variable is equal to "still", then performs the functions.
+      //first, applies the attribute of this (in this case the "gif" class), changing the source to "data-animate" of the gif in question,
+      //then secondly applies the "animate" property to the "data-state" property.
+
+      else {
+          $(this).attr("src", $(this).attr("data-still"));
+          $(this).attr("data-state", "still");
+        };
+      //
+      // ==============================================
+
+      // STEP FOUR: open the file in the browser and click on the images.
+      // Then click again to pause.
+    });
+  </script>
+</body>
+
+</html>

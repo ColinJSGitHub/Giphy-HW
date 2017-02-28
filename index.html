@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Colin Stone HW 6 - Giphy Retrievals</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+	<div id="buttons-appear-here">
+	</div>
+
+	<br>
+
+	<form>
+ 		Add a New Animal!<br>
+  		<input type="text" id="input"><br>
+  		<input type="submit" value="Submit" onclick= "newAnimal()">
+	</form>
+
+	<br>
+
+  	<div id="gifs-appear-here">
+  	</div>
+
+	<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+	<script type="text/javascript">
+
+	var topics = ["Dog", "Cat", "Badger", "Dolphin", "Shark", "Penguin", "Monkey"];
+
+
+	//NOTE TO TAS- I'm trying to cause the Add a New Animal input to push the value entered in my input box with the ID "addAnimal" to my array for topics,
+	//but I'm having no luck. This has been driving me crazy for the past few days, the other parts weren't as difficult but this has been a complete
+	//roadblock for me. Any advice or help on this portion woudl be greatly appreciated!
+	function newAnimal() {
+
+		topics.push($("#input").value);
+	};
+
+
+	//For loop that loops through all of the items in the topics array 
+	for (var i = 0; i < topics.length; i++) {
+
+		var animalbutton = $("<button>"+topics[i]+"</button>");
+		animalbutton.attr("type", "button");
+		animalbutton.attr("class", "btn btn-primary btn-med");
+		animalbutton.attr("data-animal", topics[i]);
+		
+
+		$("#buttons-appear-here").append(animalbutton);
+	}
+
+	$("button").on("click", function() {
+      //Assigns variables: animal variable becomes the attribute "data-animal" which we assigned earlier. The this function uses the current button
+      var animal = $(this).attr("data-animal");
+      // could also use var person = $(this).data("animal")
+
+
+      //assigns the queryURL variable to GIPHY api, adds the "animal" variable which is the "data-animal"attribute taken from the array topics
+      //(i.e. Dog) and then completes the search with a limit of 10 responses per button press.
+      var queryURL = "http://api.giphy.com/v1/gifs/search?q=" +
+        animal + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+
+      //performing our AJAX GET request. Stole this directly from one our in-class exercises and remade a few variables >=]
+      $.ajax({
+          url: queryURL,
+          method: "GET"
+        })
+        //after the data comes back from the API
+        .done(function(response) {
+          //stores an array of results in the results variable
+          var results = response.data;
+          console.log(results)
+
+          //looping over every result item
+          for (var i = 0; i < results.length; i++) {
+
+            //assigns the gifDiv variable to be equal the div class "item"
+            var gifDiv = $("<div class='item'>");
+
+            //uses the current variable of the results array and assigns it to the current rating value
+            var rating = results[i].rating;
+
+            //assigns the p variable to be a paragraph with the text string "Rating: " and the value of the rating variable (the rating of the gif in question). This displays the rating of each Gif we grab below the image/gif.
+            var p = $("<p>").text("Rating: " + rating);
+
+            //creates an animalImage variable that defines it as the <img> type with the class of gif
+            var animalImage= $("<img class='gif'>");
+            //assigns the "src" attribute of the new image made by personImage to be that of the url of the specific image from the results,
+            //then assigns the data-state attribute (whether or not it is an animated image or not) and assigns the source for the animated or
+            //still gif, etc.
+            animalImage.attr("src", results[i].images.fixed_height_still.url);
+            animalImage.attr("data-state", "still")
+            animalImage.attr("data-still", results[i].images.fixed_height_still.url)
+            animalImage.attr("data-animate", results[i].images.fixed_height.url)
+
+            //appends the paragraph we made (variable = p) and the image we pulled (animalImage variable)
+            gifDiv.prepend(p);
+            gifDiv.prepend(animalImage);
+
+            //Performs the prepend function, dropping the new image and rating to the section "#gifs-appear-here"
+            $("#gifs-appear-here").prepend(gifDiv);
+          }
+
+
+          	//The set of functions and variables that cause all items with the class "gif", in this case all of our images/gifs we added to our page,
+          	//to switch between the "still" and "animated" as the source of the gif, allowing us to toggle between the animated gif and the unanimated gif.
+            $(".gif").on("click", function() {
+
+
+      		var state = $(this).attr("data-state");
+      		
+
+      		if (state === "still") {
+        		$(this).attr("src", $(this).attr("data-animate"));
+        		$(this).attr("data-state", "animate");
+      		}
+
+      		else {
+          		$(this).attr("src", $(this).attr("data-still"));
+          		$(this).attr("data-state", "still");
+        	};
+
+    		});
+
+        });
+    });
+	</script>
+</body>
