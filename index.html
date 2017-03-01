@@ -15,7 +15,7 @@
 	<form>
  		Add a New Animal!<br>
   		<input type="text" id="input"><br>
-  		<input type="submit" value="Submit" onclick= "newAnimal()">
+  		<input type="button" value="Submit" id="dragon">
 	</form>
 
 	<br>
@@ -32,13 +32,23 @@
 	//NOTE TO TAS- I'm trying to cause the Add a New Animal input to push the value entered in my input box with the ID "addAnimal" to my array for topics,
 	//but I'm having no luck. This has been driving me crazy for the past few days, the other parts weren't as difficult but this has been a complete
 	//roadblock for me. Any advice or help on this portion woudl be greatly appreciated!
-	function newAnimal() {
+	$("#dragon").on("click",function() {
+		//NEVER USE OLDSCHOOL VERSION, ALWAYS USE JQUERY. YOU DUMMY
 
-		topics.push($("#input").value);
-	};
+		topics.push($("#input").val());
+		console.log(topics)
+		$("#buttons-appear-here").empty(); //by using the empty() function in jQuery, we empty all of the child elements inside of the "buttons-appear-here"
+		//element. We do this because if we did not empty this, we would be adding copies of previous buttons at the top of the page.
+		updateButtons()  // we call the updateButtons function because we need the page to reload and generate the buttons based off of the topics array;
+		//
+	});
 
 
-	//For loop that loops through all of the items in the topics array 
+
+	//For loop that loops through all of the items in the topics array. This for loop is in a function and we call this function so that whenever
+	//we attempt to add a new item into our array topics, the function that generates the animal buttons will refresh, adding my new array elements.
+	
+	var updateButtons = function() {
 	for (var i = 0; i < topics.length; i++) {
 
 		var animalbutton = $("<button>"+topics[i]+"</button>");
@@ -48,9 +58,13 @@
 		
 
 		$("#buttons-appear-here").append(animalbutton);
-	}
+	}}
 
-	$("button").on("click", function() {
+	updateButtons();
+
+	$("#buttons-appear-here").on("click", "button", function() { //Refers to the children of the "buttons-appear-here" section, then passes two arguments
+		//when you click, and if the child element is of the "button" type.
+
       //Assigns variables: animal variable becomes the attribute "data-animal" which we assigned earlier. The this function uses the current button
       var animal = $(this).attr("data-animal");
       // could also use var person = $(this).data("animal")
